@@ -3,8 +3,8 @@ package com.check_system;
 import com.jcraft.jsch.*;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.TextAlignment;
@@ -23,21 +23,25 @@ public class SSHCommandExecutorApp {
     private JTextArea outputArea;
 
     public static void main(String[] args) {
-        // Set FlatLaf Light Look and Feel
         try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+            UIManager.setLookAndFeel(new FlatLightLaf()); // Apply modern FlatLaf theme
+        } catch (Exception e) {
+            System.err.println("Failed to initialize LaF");
         }
-
         SwingUtilities.invokeLater(SSHCommandExecutorApp::new);
     }
 
     public SSHCommandExecutorApp() {
         frame = new JFrame("SSH Command Executor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 500);
+        frame.setSize(800, 700);
         frame.setLayout(new BorderLayout());
+
+        // Center the frame on the screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((screenSize.getWidth() - frame.getWidth()) / 2);
+        int y = (int) ((screenSize.getHeight() - frame.getHeight()) / 2);
+        frame.setLocation(x, y);
 
         JPanel topPanel = new JPanel(new GridLayout(4, 2, 5, 5));
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -53,9 +57,12 @@ public class SSHCommandExecutorApp {
         topPanel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
         topPanel.add(passwordField);
-
-        topPanel.add(new JLabel("Commands (comma-separated):"));
-        commandField = new JTextField("ls -lah,whoami,df -h, asterisk -rx 'sip show peers'");
+        
+        File file = new File("commands.txt");
+        System.out.println(file.getAbsolutePath());
+        
+        topPanel.add(new JLabel("Commands (from file):"));
+        commandField = new JTextField(loadCommandsFromFile(file.getAbsolutePath())); // Load commands
         topPanel.add(commandField);
 
         frame.add(topPanel, BorderLayout.NORTH);
@@ -76,6 +83,24 @@ public class SSHCommandExecutorApp {
 
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
+    }
+
+    private String loadCommandsFromFile(String filePath) {
+        StringBuilder commands = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) { // Skip empty lines
+                    if (commands.length() > 0) {
+                        commands.append(","); // Separate commands with commas
+                    }
+                    commands.append(line.trim());
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, "Error reading commands file: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return commands.toString();
     }
 
     private void executeSSHCommands(ActionEvent e) {
