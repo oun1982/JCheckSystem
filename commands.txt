@@ -1,3 +1,5 @@
-df -h
-ls -lrt
-asterisk -rx 'core show uptime'
+sudo systemctl status chronyd | grep Active -B 2
+sudo chronyc sources 
+sudo chronyc tracking
+sudo cat /var/spool/cron/crontabs/root
+sudo asterisk -rx 'core show sysinfo'

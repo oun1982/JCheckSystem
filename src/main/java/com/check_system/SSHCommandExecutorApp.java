@@ -47,7 +47,7 @@ public class SSHCommandExecutorApp {
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         topPanel.add(new JLabel("SSH Host:"));
-        hostField = new JTextField("192.168.60.1");
+        hostField = new JTextField("172.16.161.22");
         topPanel.add(hostField);
 
         topPanel.add(new JLabel("Username:"));
