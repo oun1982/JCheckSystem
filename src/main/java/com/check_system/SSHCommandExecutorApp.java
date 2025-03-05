@@ -114,7 +114,7 @@ public class SSHCommandExecutorApp {
         List<String> results = SSHExecutor.executeCommands(host, user, password, List.of(commands));
 
         for (String result : results) {
-            outputArea.append(result + "\n-----------------------------------\n");
+            outputArea.append(result + "\n------------------------------------\n");
         }
     }
 
