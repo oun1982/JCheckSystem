@@ -19,7 +19,8 @@ import java.util.List;
 
 public class SSHCommandExecutorApp {
     private JFrame frame;
-    private JTextField hostField, userField, passwordField, commandField;
+    private JComboBox<String> hostComboBox;
+    private JTextField userField, passwordField, commandField;
     private JTextArea outputArea;
 
     public static void main(String[] args) {
@@ -47,8 +48,10 @@ public class SSHCommandExecutorApp {
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         topPanel.add(new JLabel("SSH Host:"));
-        hostField = new JTextField("172.16.161.22");
-        topPanel.add(hostField);
+        hostComboBox = new JComboBox<>(new String[] {
+            "172.16.161.22", "192.168.60.1", "192.168.102.110" // Add your host options here
+        });
+        topPanel.add(hostComboBox);
 
         topPanel.add(new JLabel("Username:"));
         userField = new JTextField("root");
@@ -57,10 +60,10 @@ public class SSHCommandExecutorApp {
         topPanel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
         topPanel.add(passwordField);
-        
+
         File file = new File("commands.txt");
         System.out.println(file.getAbsolutePath());
-        
+
         topPanel.add(new JLabel("Commands (from file):"));
         commandField = new JTextField(loadCommandsFromFile(file.getAbsolutePath())); // Load commands
         topPanel.add(commandField);
@@ -106,7 +109,7 @@ public class SSHCommandExecutorApp {
     private void executeSSHCommands(ActionEvent e) {
         outputArea.setText("Executing SSH commands...\n");
 
-        String host = hostField.getText();
+        String host = (String) hostComboBox.getSelectedItem(); // Get selected host from combo box
         String user = userField.getText();
         String password = passwordField.getText();
         String[] commands = commandField.getText().split(",");
